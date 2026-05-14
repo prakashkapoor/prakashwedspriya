@@ -32,7 +32,7 @@ export default function WeddingWebsite() {
       time: '11:00 AM',
       venue: 'Mehta Residence, Ahiyapur',
       venueLine2: 'Behind Shakuntala Cinema, Muzaffarpur',
-      dress: 'Traditional · Yellow / Cream',
+      dress: 'Traditional · Red / Saffron',
       mapUrl: 'https://www.google.com/maps/place/Neha+Enterprises/@26.1484055,85.3947537,17z/data=!3m1!4b1!4m6!3m5!1s0x39ed11a5ea4d29ed:0xdc4eedf1a8b0684c!8m2!3d26.1484055!4d85.397334!16s%2Fg%2F11g10l1n1w',
       contact: 'Vikash Mehta / विकाश मेहता · +91 9973747471',
       color: 'amber',
@@ -77,7 +77,7 @@ export default function WeddingWebsite() {
       time: '5:00 PM',
       venue: 'Mehta Residence, Ahiyapur',
       venueLine2: 'Behind Shakuntala Cinema, Muzaffarpur',
-      dress: 'Festive · Green / Pink / Bright',
+      dress: 'Festive · Green',
       mapUrl: 'https://www.google.com/maps/place/Neha+Enterprises/@26.1484055,85.3947537,17z/data=!3m1!4b1!4m6!3m5!1s0x39ed11a5ea4d29ed:0xdc4eedf1a8b0684c!8m2!3d26.1484055!4d85.397334!16s%2Fg%2F11g10l1n1w',
       contact: 'Vikash Mehta / विकाश मेहता · +91 9973747471',
       color: 'green',
@@ -904,8 +904,8 @@ export default function WeddingWebsite() {
                 <div><strong>Rapido:</strong> Limited / <span className="font-hindi">सीमित उपलब्धता</span></div>
                 <div><strong>Auto/Rickshaw:</strong> Plenty available / <span className="font-hindi">ऑटो/रिक्शा खूब मिलेंगे</span></div>
                 <div className="text-xs mt-3 italic">
-                  Family cars available for shuttling between events.<br />
-                  <span className="font-hindi">कार्यक्रमों के बीच आने-जाने के लिए परिवार की गाड़ियाँ उपलब्ध हैं।</span>
+                  Family cars available for pickup from the railway station, airport, and for shuttling between events.<br />
+                  <span className="font-hindi">रेलवे स्टेशन, एयरपोर्ट से पिकअप और कार्यक्रमों के बीच आने-जाने के लिए परिवार की गाड़ियाँ उपलब्ध रहेंगी।</span>
                 </div>
               </div>
             </div>
