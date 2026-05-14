@@ -667,7 +667,7 @@ export default function WeddingWebsite() {
               <div className="font-hindi text-sm text-amber-800 mb-3">हवाई मार्ग से</div>
               <div className="space-y-2 text-sm text-stone-700">
                 <div><strong>Patna Airport (PAT)</strong> — 75 km (~2 hrs)</div>
-                <div><strong>Darbhanga Airport (DBR)</strong> — 65 km (~1.5 hrs)</div>
+                <div><strong>Darbhanga Airport (DBR)</strong> — 50 km (~1.5 hrs)</div>
                 <div className="text-xs text-amber-800 mt-3">Pickup can be arranged.<br /><span className="font-hindi">पिकअप की व्यवस्था की जा सकती है।</span></div>
               </div>
             </div>
