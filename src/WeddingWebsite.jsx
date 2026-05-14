@@ -10,12 +10,12 @@ export default function WeddingWebsite() {
     groom: { name: 'प्रकाश कुमार', nameEn: 'Prakash Kumar', initial: 'P' },
     hashtag: '#PrakashWedsPriya',
     weddingDate: '2026-06-19T15:00:00+05:30',
-    quote: 'दो आत्माओं का एक होना',
-    quoteEn: 'Two souls, one journey',
+    quote: 'खुशियाँ तभी पूरी लगती हैं, जब अपने साथ हों',
+    quoteEn: 'The happiest moments are the ones shared with loved ones',
     storyHi:
-      'दोनों परिवार परंपरा और प्रेम के माध्यम से एक हुए। महीनों के शगुन, मिठाइयों और साझा सपनों के बाद, प्रकाश और प्रिया अपने सदा-सर्वदा की शुरुआत के लिए तैयार हैं — और वे चाहते हैं कि आप हर हल्दी, मेहंदी, और संगीत के पल में उनके साथ हों।',
+      'परिवारों के प्यार और आशीर्वाद के साथ, प्रकाश और प्रिया अपनी नई जिंदगी की शुरुआत करने जा रहे हैं। अब बस इंतज़ार है आप सबके साथ मिलकर इस खुशी को हँसी, मस्ती, नाच-गाने और ढेर सारी यादों के साथ मनाने का। आप सबके बिना यह खुशी अधूरी लगेगी।',
     storyEn:
-      'Their families came together through tradition and love. After months of shagun, sweets, and shared dreams, Prakash and Priya are ready to begin their forever — and they want you there for every haldi-smeared, mehendi-stained, sangeet-danced moment of it.',
+      'With the love and blessings of their families, Prakash and Priya are ready to begin a beautiful new chapter together. Now it’s time to celebrate this special occasion with laughter, dance, great food, and the people who matter the most.',
     contacts: [
       { name: 'विकाश मेहता / Vikash Mehta', role: 'Groom\'s Brother / वर के भाई', phone: '+91 9973747471' },
       { name: 'श्री कैलाश प्रसाद मेहता / Sh. Kailash Prasad Mehta', role: 'Groom\'s Father / वर के पिता', phone: '+91 7870027514' },
@@ -29,14 +29,14 @@ export default function WeddingWebsite() {
       nameEn: 'Kuldevta Pujan',
       date: '2026-06-15',
       dateLabel: 'Mon, 15 Jun',
-      time: '10:00 AM to 11:00 AM',
+      time: '11:00 AM',
       venue: 'Mehta Residence, Ahiyapur',
       venueLine2: 'Behind Shakuntala Cinema, Muzaffarpur',
       dress: 'Traditional · Yellow / Cream',
       mapUrl: 'https://www.google.com/maps/place/Neha+Enterprises/@26.1484055,85.3947537,17z/data=!3m1!4b1!4m6!3m5!1s0x39ed11a5ea4d29ed:0xdc4eedf1a8b0684c!8m2!3d26.1484055!4d85.397334!16s%2Fg%2F11g10l1n1w',
       contact: 'Vikash Mehta / विकाश मेहता · +91 9973747471',
       color: 'amber',
-      icon: '🪔',
+      icon: '🛕',
     },
     {
       key: 'shivcharcha',
@@ -51,7 +51,7 @@ export default function WeddingWebsite() {
       mapUrl: 'https://www.google.com/maps/place/Neha+Enterprises/@26.1484055,85.3947537,17z/data=!3m1!4b1!4m6!3m5!1s0x39ed11a5ea4d29ed:0xdc4eedf1a8b0684c!8m2!3d26.1484055!4d85.397334!16s%2Fg%2F11g10l1n1w',
       contact: 'Vikash Mehta / विकाश मेहता · +91 9973747471',
       color: 'orange',
-      icon: '🕉️',
+      icon: '🔱',
     },
     {
       key: 'haldi',
@@ -66,7 +66,7 @@ export default function WeddingWebsite() {
       mapUrl: 'https://www.google.com/maps/place/Neha+Enterprises/@26.1484055,85.3947537,17z/data=!3m1!4b1!4m6!3m5!1s0x39ed11a5ea4d29ed:0xdc4eedf1a8b0684c!8m2!3d26.1484055!4d85.397334!16s%2Fg%2F11g10l1n1w',
       contact: 'Vikash Mehta / विकाश मेहता · +91 9973747471',
       color: 'yellow',
-      icon: '🌼',
+      icon: '💛🌼',
     },
     {
       key: 'mehendi',
@@ -81,7 +81,7 @@ export default function WeddingWebsite() {
       mapUrl: 'https://www.google.com/maps/place/Neha+Enterprises/@26.1484055,85.3947537,17z/data=!3m1!4b1!4m6!3m5!1s0x39ed11a5ea4d29ed:0xdc4eedf1a8b0684c!8m2!3d26.1484055!4d85.397334!16s%2Fg%2F11g10l1n1w',
       contact: 'Vikash Mehta / विकाश मेहता · +91 9973747471',
       color: 'green',
-      icon: '🌿',
+      icon: '💚🎶',
     },
     {
       key: 'wedding',
@@ -96,7 +96,7 @@ export default function WeddingWebsite() {
       mapUrl: 'https://maps.google.com/?q=Shahjahanpur+Patna',
       contact: 'Vikash Mehta / विकाश मेहता · +91 9973747471',
       color: 'red',
-      icon: '💍',
+      icon: '👰🤵',
       highlight: true,
     },
     {
@@ -112,7 +112,7 @@ export default function WeddingWebsite() {
       mapUrl: 'https://maps.google.com/?q=Blessing+Palace+Muzaffarpur',
       contact: 'Vikash Mehta / विकाश मेहता · +91 9973747471',
       color: 'rose',
-      icon: '✨',
+      icon: '🎉🍽️',
       highlight: true,
     },
   ];
@@ -215,7 +215,7 @@ export default function WeddingWebsite() {
   };
 
   const shareOnWhatsApp = () => {
-    const text = `You're invited! 💍\n\n${WEDDING.groom.nameEn} weds ${WEDDING.bride.nameEn}\n19 June 2026\n\n${WEDDING.hashtag}\n\n${window.location.href}`;
+    const text = `💍 सादर आमंत्रण 💍\n\nपरिवार के प्यार और आशीर्वाद के साथ,\n${WEDDING.groom.nameEn} ❤️ ${WEDDING.bride.nameEn}\nआपको अपने विवाह समारोह में सपरिवार आमंत्रित करते हैं।\n\n📅 19 June 2026\n\nAap sabke bina ye khushi adhuri lagegi. Zaroor aaiyega ✨\n\n${WEDDING.hashtag}\n\n${window.location.href}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
   };
 
@@ -537,16 +537,16 @@ export default function WeddingWebsite() {
                 bodyHi: 'मुजफ्फरपुर में दो परिवार साझे मित्रों के माध्यम से जुड़े। पहली मुलाक़ात ऐसी लगी जैसे अपना घर हो।',
               },
               {
-                icon: '💍',
-                titleEn: 'Lifetime Commitment',
-                titleHi: 'जीवनभर का साथ',
-                bodyEn: 'Two families came together with blessings and shared dreams — turning hopes into endless plans, late-night calls, and a promise of forever.',
-                bodyHi: 'दो परिवार आशीर्वाद और साझे सपनों के साथ एक हुए — आशाएँ अनगिनत योजनाओं, देर रात की बातों और सदा-सर्वदा के वचन में बदल गईं।',
+                icon: '👰🤵',
+                titleEn: 'A New Beginning',
+                titleHi: 'नई शुरुआत',
+                bodyEn: 'With the blessings of their families, Prakash and Priya are ready to begin this beautiful journey together and create a lifetime of memories.',
+                bodyHi: 'परिवारों के आशीर्वाद के साथ, प्रकाश और प्रिया अब अपनी नई जिंदगी की शुरुआत करने जा रहे हैं और साथ मिलकर खूबसूरत यादें बनाने के लिए तैयार हैं।',
               },
               {
                 icon: '🎉',
-                titleEn: 'The Big Day',
-                titleHi: 'शुभ दिन',
+                titleEn: 'Lifetime Commitment',
+                titleHi: 'जीवनभर का साथ',
                 bodyEn: 'Now we invite you to witness our forever begin — with sindoor, vows, and a lot of joy.',
                 bodyHi: 'अब हम आपको आमंत्रित करते हैं कि हमारे सदा-सर्वदा की शुरुआत के साक्षी बनें — सिंदूर, वचन, और असीम आनंद के साथ।',
               },
@@ -751,7 +751,6 @@ export default function WeddingWebsite() {
                       {[
                         { val: 'veg', label: '🌱 Veg' },
                         { val: 'jain', label: '🙏 Jain' },
-                        { val: 'nonveg', label: '🍗 Non-Veg' },
                       ].map((m) => (
                         <button
                           key={m.val}
