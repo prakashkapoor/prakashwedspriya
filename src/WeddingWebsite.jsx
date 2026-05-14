@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Heart, Calendar, MapPin, Phone, Users, Camera, Gift, Bell, Menu, X, ChevronRight, Plane, Hotel, Car, Music, Sparkles, Check } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Heart, Calendar, MapPin, Phone, Camera, Bell, Menu, X, Plane, Car, Music, Sparkles, Check } from 'lucide-react';
 
 export default function WeddingWebsite() {
   // ===========================================================================
@@ -22,6 +22,20 @@ export default function WeddingWebsite() {
     ],
   };
 
+  // ===========================================================================
+  // 📋 GOOGLE SHEETS RSVP — Paste your Apps Script Web App URL here
+  // ===========================================================================
+  const GOOGLE_SHEET_URL = 'PASTE_YOUR_APPS_SCRIPT_URL_HERE';
+  const WEDDING_SIDE = 'Groom';
+
+  // ===========================================================================
+  // 📸 CLOUDINARY PHOTO UPLOAD — Pre-filled with your account
+  // ===========================================================================
+  const CLOUDINARY_CLOUD_NAME = 'dojezyuyf';
+  const CLOUDINARY_UPLOAD_PRESET = 'wedding_uploads';
+  // Link to view all photos (your Cloudinary media library)
+  const PHOTO_VIEW_URL = 'https://console.cloudinary.com/console/c-' + CLOUDINARY_CLOUD_NAME + '/media_library';
+
   const EVENTS = [
     {
       key: 'kuldevta',
@@ -33,7 +47,7 @@ export default function WeddingWebsite() {
       venue: 'Mehta Residence, Ahiyapur',
       venueLine2: 'Behind Shakuntala Cinema, Muzaffarpur',
       dress: 'Traditional · Red / Saffron',
-      mapUrl: 'https://www.google.com/maps/place/Neha+Enterprises/@26.1484055,85.3947537,17z/data=!3m1!4b1!4m6!3m5!1s0x39ed11a5ea4d29ed:0xdc4eedf1a8b0684c!8m2!3d26.1484055!4d85.397334!16s%2Fg%2F11g10l1n1w',
+      mapUrl: 'https://www.google.com/maps/place/Neha+Enterprises/@26.1484055,85.3947537,17z',
       contact: 'Vikash Mehta / विकाश मेहता · +91 9973747471',
       color: 'amber',
       icon: '🛕',
@@ -48,7 +62,7 @@ export default function WeddingWebsite() {
       venue: 'Mehta Residence, Ahiyapur',
       venueLine2: 'Behind Shakuntala Cinema, Muzaffarpur',
       dress: 'Traditional · Orange / Red',
-      mapUrl: 'https://www.google.com/maps/place/Neha+Enterprises/@26.1484055,85.3947537,17z/data=!3m1!4b1!4m6!3m5!1s0x39ed11a5ea4d29ed:0xdc4eedf1a8b0684c!8m2!3d26.1484055!4d85.397334!16s%2Fg%2F11g10l1n1w',
+      mapUrl: 'https://www.google.com/maps/place/Neha+Enterprises/@26.1484055,85.3947537,17z',
       contact: 'Vikash Mehta / विकाश मेहता · +91 9973747471',
       color: 'orange',
       icon: '🔱',
@@ -63,7 +77,7 @@ export default function WeddingWebsite() {
       venue: 'Mehta Residence, Ahiyapur',
       venueLine2: 'Behind Shakuntala Cinema, Muzaffarpur',
       dress: 'Yellow · Wear clothes you don\'t mind staining!',
-      mapUrl: 'https://www.google.com/maps/place/Neha+Enterprises/@26.1484055,85.3947537,17z/data=!3m1!4b1!4m6!3m5!1s0x39ed11a5ea4d29ed:0xdc4eedf1a8b0684c!8m2!3d26.1484055!4d85.397334!16s%2Fg%2F11g10l1n1w',
+      mapUrl: 'https://www.google.com/maps/place/Neha+Enterprises/@26.1484055,85.3947537,17z',
       contact: 'Vikash Mehta / विकाश मेहता · +91 9973747471',
       color: 'yellow',
       icon: '💛🌼',
@@ -78,7 +92,7 @@ export default function WeddingWebsite() {
       venue: 'Mehta Residence, Ahiyapur',
       venueLine2: 'Behind Shakuntala Cinema, Muzaffarpur',
       dress: 'Festive · Green',
-      mapUrl: 'https://www.google.com/maps/place/Neha+Enterprises/@26.1484055,85.3947537,17z/data=!3m1!4b1!4m6!3m5!1s0x39ed11a5ea4d29ed:0xdc4eedf1a8b0684c!8m2!3d26.1484055!4d85.397334!16s%2Fg%2F11g10l1n1w',
+      mapUrl: 'https://www.google.com/maps/place/Neha+Enterprises/@26.1484055,85.3947537,17z',
       contact: 'Vikash Mehta / विकाश मेहता · +91 9973747471',
       color: 'green',
       icon: '💚🎶',
@@ -125,31 +139,23 @@ export default function WeddingWebsite() {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [musicOn, setMusicOn] = useState(false);
   const [rsvp, setRsvp] = useState({
-    name: '',
-    attending: '',
-    guests: 1,
-    meal: 'veg',
-    accommodation: 'no',
-    events: [],
-    travel: '',
-    message: '',
+    name: '', attending: '', guests: 1, meal: 'veg', accommodation: 'no',
+    events: [], travel: '', phone: '', message: '',
   });
   const [rsvpSubmitted, setRsvpSubmitted] = useState(false);
+  const [rsvpSubmitting, setRsvpSubmitting] = useState(false);
+  const [rsvpError, setRsvpError] = useState(null);
+  const [uploadStatus, setUploadStatus] = useState({ uploading: false, success: 0 });
   const [liveUpdates, setLiveUpdates] = useState([
-    { id: 1, time: 'Posted just now', title: 'Welcome! / स्वागत है', body: 'The countdown has begun. We can\'t wait to celebrate with you. Bookmark this page for live updates during the wedding week. / शुभ घड़ी की प्रतीक्षा शुरू हो गई है। शादी सप्ताह की ताज़ा सूचना के लिए इस पेज को सहेज लें।', type: 'info' },
+    { id: 1, time: 'Posted just now', title: 'Welcome! / स्वागत है', body: 'The countdown has begun. We can\'t wait to celebrate with you. Bookmark this page for live updates during the wedding week. / शुभ घड़ी की प्रतीक्षा शुरू हो गई है।', type: 'info' },
   ]);
 
-  // ===========================================================================
-  // COUNTDOWN
-  // ===========================================================================
+  // Countdown
   useEffect(() => {
     const target = new Date(WEDDING.weddingDate).getTime();
     const tick = () => {
       const diff = target - Date.now();
-      if (diff <= 0) {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-        return;
-      }
+      if (diff <= 0) { setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 }); return; }
       setTimeLeft({
         days: Math.floor(diff / 86400000),
         hours: Math.floor((diff % 86400000) / 3600000),
@@ -162,9 +168,7 @@ export default function WeddingWebsite() {
     return () => clearInterval(id);
   }, []);
 
-  // ===========================================================================
-  // SECTION SCROLL TRACKING
-  // ===========================================================================
+  // Section scroll tracking
   useEffect(() => {
     const sections = ['home', 'story', 'events', 'rsvp', 'travel', 'gallery', 'gifts', 'updates'];
     const handler = () => {
@@ -172,10 +176,7 @@ export default function WeddingWebsite() {
         const el = document.getElementById(id);
         if (!el) continue;
         const rect = el.getBoundingClientRect();
-        if (rect.top <= 120 && rect.bottom >= 120) {
-          setActiveSection(id);
-          break;
-        }
+        if (rect.top <= 120 && rect.bottom >= 120) { setActiveSection(id); break; }
       }
     };
     window.addEventListener('scroll', handler, { passive: true });
@@ -183,15 +184,19 @@ export default function WeddingWebsite() {
     return () => window.removeEventListener('scroll', handler);
   }, []);
 
-  // ===========================================================================
-  // HELPERS
-  // ===========================================================================
+  // Load Cloudinary widget script
+  useEffect(() => {
+    if (document.getElementById('cloudinary-widget-script')) return;
+    const script = document.createElement('script');
+    script.id = 'cloudinary-widget-script';
+    script.src = 'https://upload-widget.cloudinary.com/global/all.js';
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
+
   const scrollTo = (id) => {
     const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      setNavOpen(false);
-    }
+    if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); setNavOpen(false); }
   };
 
   const addToCalendar = (event) => {
@@ -202,16 +207,91 @@ export default function WeddingWebsite() {
     window.open(url, '_blank');
   };
 
-  const submitRsvp = () => {
+  // 📸 Cloudinary Upload Widget
+  const openCloudinaryWidget = () => {
+    if (typeof window.cloudinary === 'undefined') {
+      alert('Upload widget loading... please try again in 2 seconds. / Widget लोड हो रहा है, कृपया 2 सेकंड बाद try करें।');
+      return;
+    }
+
+    setUploadStatus({ uploading: true, success: 0 });
+
+    const widget = window.cloudinary.createUploadWidget(
+      {
+        cloudName: CLOUDINARY_CLOUD_NAME,
+        uploadPreset: CLOUDINARY_UPLOAD_PRESET,
+        folder: 'prakash-priya-wedding',
+        sources: ['local', 'camera'],
+        multiple: true,
+        maxFiles: 10,
+        clientAllowedFormats: ['image', 'video'],
+        maxFileSize: 50000000,
+        styles: {
+          palette: {
+            window: '#FDF6E9',
+            sourceBg: '#FFFFFF',
+            windowBorder: '#B45309',
+            tabIcon: '#B45309',
+            inactiveTabIcon: '#9CA3AF',
+            menuIcons: '#B45309',
+            link: '#B45309',
+            action: '#991B1B',
+            inProgress: '#F59E0B',
+            complete: '#10B981',
+            error: '#EF4444',
+            textDark: '#1F2937',
+            textLight: '#FDF6E9',
+          },
+        },
+      },
+      (error, result) => {
+        if (error) {
+          console.error('Upload error:', error);
+          setUploadStatus({ uploading: false, success: 0 });
+          return;
+        }
+        if (result.event === 'success') {
+          setUploadStatus((prev) => ({ ...prev, success: prev.success + 1 }));
+        }
+        if (result.event === 'close') {
+          setUploadStatus((prev) => ({ ...prev, uploading: false }));
+        }
+      }
+    );
+
+    widget.open();
+  };
+
+  // 📤 RSVP → Google Sheets
+  const submitRsvp = async () => {
     if (!rsvp.name || !rsvp.attending) return;
-    setRsvpSubmitted(true);
-    // In production: POST to backend
-    setTimeout(() => {
+    setRsvpSubmitting(true);
+    setRsvpError(null);
+
+    const payload = {
+      name: rsvp.name, side: WEDDING_SIDE, attending: rsvp.attending,
+      guests: rsvp.guests, meal: rsvp.meal, events: rsvp.events,
+      accommodation: rsvp.accommodation, travel: rsvp.travel,
+      phone: rsvp.phone || '', message: rsvp.message,
+    };
+
+    try {
+      await fetch(GOOGLE_SHEET_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      setRsvpSubmitted(true);
       setLiveUpdates((prev) => [
         { id: Date.now(), time: 'Just now', title: 'New RSVP', body: `${rsvp.name} ${rsvp.attending === 'yes' ? 'is joining' : 'sent regrets'} ❤️`, type: 'rsvp' },
         ...prev,
       ]);
-    }, 500);
+    } catch (err) {
+      setRsvpError('Could not save RSVP. Please try again or call us directly.');
+      console.error('RSVP submission failed:', err);
+    } finally {
+      setRsvpSubmitting(false);
+    }
   };
 
   const shareOnWhatsApp = () => {
@@ -239,128 +319,54 @@ export default function WeddingWebsite() {
     { id: 'updates', label: 'Live', hi: 'सूचना' },
   ];
 
-  // ===========================================================================
-  // RENDER
-  // ===========================================================================
   return (
     <div className="min-h-screen bg-[#FDF6E9] text-stone-800" style={{ fontFamily: '"Cormorant Garamond", "Tiro Devanagari Hindi", serif' }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Tiro+Devanagari+Hindi:ital@0;1&family=Great+Vibes&family=Marcellus&display=swap');
-
         body { margin: 0; }
         .font-serif-display { font-family: 'Cormorant Garamond', serif; }
         .font-script { font-family: 'Great Vibes', cursive; }
         .font-deco { font-family: 'Marcellus', serif; letter-spacing: 0.08em; }
         .font-hindi { font-family: 'Tiro Devanagari Hindi', serif; }
-
-        .mandala-bg {
-          background-image:
-            radial-gradient(circle at 20% 20%, rgba(184, 91, 31, 0.06) 0%, transparent 50%),
-            radial-gradient(circle at 80% 80%, rgba(139, 0, 0, 0.05) 0%, transparent 50%),
-            radial-gradient(circle at 50% 50%, rgba(218, 165, 32, 0.04) 0%, transparent 60%);
-        }
-
-        .paper-texture {
-          background-color: #FDF6E9;
-          background-image:
-            radial-gradient(at 88% 12%, rgba(255,237,213,0.5) 0px, transparent 50%),
-            radial-gradient(at 2% 92%, rgba(254,215,170,0.4) 0px, transparent 50%);
-        }
-
-        .marigold-border {
-          background-image: linear-gradient(90deg, #F59E0B 25%, #DC2626 25%, #DC2626 50%, #F59E0B 50%, #F59E0B 75%, #DC2626 75%);
-          background-size: 16px 100%;
-        }
-
-        @keyframes float-slow {
-          0%, 100% { transform: translateY(0) rotate(0deg); }
-          50% { transform: translateY(-12px) rotate(3deg); }
-        }
+        .mandala-bg { background-image: radial-gradient(circle at 20% 20%, rgba(184, 91, 31, 0.06) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(139, 0, 0, 0.05) 0%, transparent 50%), radial-gradient(circle at 50% 50%, rgba(218, 165, 32, 0.04) 0%, transparent 60%); }
+        .paper-texture { background-color: #FDF6E9; background-image: radial-gradient(at 88% 12%, rgba(255,237,213,0.5) 0px, transparent 50%), radial-gradient(at 2% 92%, rgba(254,215,170,0.4) 0px, transparent 50%); }
+        .marigold-border { background-image: linear-gradient(90deg, #F59E0B 25%, #DC2626 25%, #DC2626 50%, #F59E0B 50%, #F59E0B 75%, #DC2626 75%); background-size: 16px 100%; }
+        @keyframes float-slow { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-12px) rotate(3deg); } }
         .float-slow { animation: float-slow 6s ease-in-out infinite; }
-
-        @keyframes shimmer {
-          0% { background-position: -200% center; }
-          100% { background-position: 200% center; }
-        }
-        .gold-shimmer {
-          background: linear-gradient(90deg, #B45309 0%, #FBBF24 50%, #B45309 100%);
-          background-size: 200% auto;
-          -webkit-background-clip: text;
-          background-clip: text;
-          color: transparent;
-          animation: shimmer 4s linear infinite;
-        }
-
-        @keyframes fade-up {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+        .gold-shimmer { background: linear-gradient(90deg, #B45309 0%, #FBBF24 50%, #B45309 100%); background-size: 200% auto; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmer 4s linear infinite; }
+        @keyframes fade-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .fade-up { animation: fade-up 0.8s ease-out both; }
-
-        .ornament::before, .ornament::after {
-          content: "❋";
-          color: #B45309;
-          margin: 0 1rem;
-          font-size: 0.7em;
-          vertical-align: middle;
-        }
-
-        .countdown-num {
-          font-variant-numeric: tabular-nums;
-        }
-
-        /* Scrollbar */
+        .ornament::before, .ornament::after { content: "❋"; color: #B45309; margin: 0 1rem; font-size: 0.7em; vertical-align: middle; }
+        .countdown-num { font-variant-numeric: tabular-nums; }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #FDF6E9; }
         ::-webkit-scrollbar-thumb { background: #B45309; border-radius: 4px; }
-
         html { scroll-behavior: smooth; }
-
-        /* Diya pattern */
-        .diya-pattern {
-          background-image: repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(180, 83, 9, 0.03) 20px, rgba(180, 83, 9, 0.03) 40px);
-        }
+        .diya-pattern { background-image: repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(180, 83, 9, 0.03) 20px, rgba(180, 83, 9, 0.03) 40px); }
       `}</style>
 
-      {/* ================ TOP MARIGOLD STRIP ================ */}
       <div className="marigold-border h-2 fixed top-0 left-0 right-0 z-50" />
 
-      {/* ================ NAV ================ */}
       <nav className="fixed top-2 left-0 right-0 z-40 bg-[#FDF6E9]/95 backdrop-blur border-b border-amber-200/50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <button onClick={() => scrollTo('home')} className="flex items-center gap-2 group">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-amber-600 to-red-700 flex items-center justify-center text-white font-deco text-sm shadow-md group-hover:scale-110 transition">
-              P&P
-            </div>
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-amber-600 to-red-700 flex items-center justify-center text-white font-deco text-sm shadow-md group-hover:scale-110 transition">P&P</div>
             <div className="hidden sm:block">
               <div className="font-script text-xl text-red-900 leading-none">Prakash &amp; Priya</div>
               <div className="text-[10px] text-amber-700 tracking-widest uppercase">19 · 06 · 2026</div>
             </div>
           </button>
-
-          {/* Desktop nav */}
           <div className="hidden lg:flex items-center gap-1">
             {navItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => scrollTo(item.id)}
-                className={`px-3 py-2 text-sm font-deco transition-all rounded ${
-                  activeSection === item.id
-                    ? 'text-red-900 bg-amber-100'
-                    : 'text-stone-600 hover:text-red-900 hover:bg-amber-50'
-                }`}
-              >
+              <button key={item.id} onClick={() => scrollTo(item.id)}
+                className={`px-3 py-2 text-sm font-deco transition-all rounded ${activeSection === item.id ? 'text-red-900 bg-amber-100' : 'text-stone-600 hover:text-red-900 hover:bg-amber-50'}`}>
                 {item.label}
               </button>
             ))}
           </div>
-
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => setMusicOn(!musicOn)}
-              className="p-2 rounded-full hover:bg-amber-100 transition"
-              title={musicOn ? 'Mute' : 'Play music'}
-            >
+            <button onClick={() => setMusicOn(!musicOn)} className="p-2 rounded-full hover:bg-amber-100 transition">
               <Music size={18} className={musicOn ? 'text-red-700 animate-pulse' : 'text-stone-400'} />
             </button>
             <button onClick={() => setNavOpen(!navOpen)} className="lg:hidden p-2 rounded hover:bg-amber-100">
@@ -368,18 +374,11 @@ export default function WeddingWebsite() {
             </button>
           </div>
         </div>
-
-        {/* Mobile menu */}
         {navOpen && (
           <div className="lg:hidden border-t border-amber-200 bg-[#FDF6E9]">
             {navItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => scrollTo(item.id)}
-                className={`w-full text-left px-6 py-3 border-b border-amber-100 flex justify-between items-center ${
-                  activeSection === item.id ? 'bg-amber-50 text-red-900' : 'text-stone-700'
-                }`}
-              >
+              <button key={item.id} onClick={() => scrollTo(item.id)}
+                className={`w-full text-left px-6 py-3 border-b border-amber-100 flex justify-between items-center ${activeSection === item.id ? 'bg-amber-50 text-red-900' : 'text-stone-700'}`}>
                 <span className="font-deco">{item.label}</span>
                 <span className="font-hindi text-sm text-amber-700">{item.hi}</span>
               </button>
@@ -388,68 +387,41 @@ export default function WeddingWebsite() {
         )}
       </nav>
 
-      {/* ================ HOME / HERO ================ */}
+      {/* HOME / HERO */}
       <section id="home" className="relative pt-24 sm:pt-28 min-h-screen flex items-center mandala-bg paper-texture overflow-hidden">
-        {/* Decorative corner ornaments */}
         <div className="absolute top-20 left-4 sm:left-10 text-6xl sm:text-8xl text-amber-300/30 float-slow font-hindi">॥</div>
         <div className="absolute bottom-10 right-4 sm:right-10 text-6xl sm:text-8xl text-red-300/30 float-slow font-hindi" style={{ animationDelay: '2s' }}>॥</div>
-
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 text-center relative z-10">
-          {/* Shri Ganesh */}
-          <div className="fade-up font-hindi text-amber-700 text-sm sm:text-base mb-6 tracking-widest">
-            ॥ श्री गणेशाय नमः ॥
-          </div>
-
-          {/* Couple names */}
+          <div className="fade-up font-hindi text-amber-700 text-sm sm:text-base mb-6 tracking-widest">॥ श्री गणेशाय नमः ॥</div>
           <div className="fade-up" style={{ animationDelay: '0.2s' }}>
-            <div className="font-deco text-xs sm:text-sm text-amber-800 tracking-[0.3em] mb-2">
-              TOGETHER WITH THEIR FAMILIES
-            </div>
-            <div className="font-hindi text-xs sm:text-sm text-amber-800 mb-4">
-              अपने परिवारों के साथ
-            </div>
-
+            <div className="font-deco text-xs sm:text-sm text-amber-800 tracking-[0.3em] mb-2">TOGETHER WITH THEIR FAMILIES</div>
+            <div className="font-hindi text-xs sm:text-sm text-amber-800 mb-4">अपने परिवारों के साथ</div>
             <div className="space-y-2 sm:space-y-4">
-              <h1 className="font-script text-5xl sm:text-7xl md:text-8xl gold-shimmer leading-none">
-                {WEDDING.groom.nameEn}
-              </h1>
+              <h1 className="font-script text-5xl sm:text-7xl md:text-8xl gold-shimmer leading-none">{WEDDING.groom.nameEn}</h1>
               <div className="flex items-center justify-center gap-4 my-3">
                 <div className="h-px w-12 sm:w-24 bg-amber-600/40" />
                 <div className="font-deco text-2xl sm:text-3xl text-red-900">&amp;</div>
                 <div className="h-px w-12 sm:w-24 bg-amber-600/40" />
               </div>
-              <h1 className="font-script text-5xl sm:text-7xl md:text-8xl gold-shimmer leading-none">
-                {WEDDING.bride.nameEn}
-              </h1>
+              <h1 className="font-script text-5xl sm:text-7xl md:text-8xl gold-shimmer leading-none">{WEDDING.bride.nameEn}</h1>
             </div>
-
-            <div className="font-hindi text-base sm:text-xl text-stone-700 mt-6">
-              {WEDDING.groom.name} &nbsp;◆&nbsp; {WEDDING.bride.name}
-            </div>
+            <div className="font-hindi text-base sm:text-xl text-stone-700 mt-6">{WEDDING.groom.name} &nbsp;◆&nbsp; {WEDDING.bride.name}</div>
           </div>
-
-          {/* Date */}
           <div className="fade-up mt-10 inline-block" style={{ animationDelay: '0.4s' }}>
             <div className="flex items-center gap-4 sm:gap-6 justify-center">
               <div className="text-right">
                 <div className="font-deco text-xs text-amber-800 tracking-widest">FRIDAY</div>
                 <div className="font-serif-display text-2xl sm:text-3xl text-red-900">June</div>
               </div>
-              <div className="font-serif-display text-6xl sm:text-8xl text-red-900 leading-none px-4 border-x-2 border-amber-600/30">
-                19
-              </div>
+              <div className="font-serif-display text-6xl sm:text-8xl text-red-900 leading-none px-4 border-x-2 border-amber-600/30">19</div>
               <div className="text-left">
                 <div className="font-deco text-xs text-amber-800 tracking-widest">2026</div>
                 <div className="font-serif-display text-2xl sm:text-3xl text-red-900">Patna</div>
               </div>
             </div>
           </div>
-
-          {/* Countdown */}
           <div className="fade-up mt-12" style={{ animationDelay: '0.6s' }}>
-            <div className="text-xs font-deco text-amber-800 tracking-widest mb-1 ornament">
-              <span>THE COUNTDOWN BEGINS</span>
-            </div>
+            <div className="text-xs font-deco text-amber-800 tracking-widest mb-1 ornament"><span>THE COUNTDOWN BEGINS</span></div>
             <div className="font-hindi text-xs text-amber-800 mb-4">शुभ घड़ी की प्रतीक्षा</div>
             <div className="grid grid-cols-4 gap-2 sm:gap-4 max-w-md mx-auto">
               {[
@@ -459,48 +431,31 @@ export default function WeddingWebsite() {
                 { val: timeLeft.seconds, label: 'Sec', hi: 'सेकंड' },
               ].map((b, i) => (
                 <div key={i} className="bg-white/60 backdrop-blur border border-amber-200 rounded-lg p-2 sm:p-4 shadow-sm">
-                  <div className="font-serif-display text-2xl sm:text-4xl text-red-900 countdown-num">
-                    {String(b.val).padStart(2, '0')}
-                  </div>
+                  <div className="font-serif-display text-2xl sm:text-4xl text-red-900 countdown-num">{String(b.val).padStart(2, '0')}</div>
                   <div className="text-[10px] sm:text-xs font-deco text-amber-700 tracking-widest mt-1">{b.label}</div>
                   <div className="font-hindi text-[10px] text-amber-800 mt-0.5">{b.hi}</div>
                 </div>
               ))}
             </div>
           </div>
-
-          {/* CTAs */}
           <div className="fade-up mt-10 flex flex-wrap items-center justify-center gap-3" style={{ animationDelay: '0.8s' }}>
-            <button
-              onClick={() => scrollTo('rsvp')}
-              className="group inline-flex items-center gap-2 bg-red-800 hover:bg-red-900 text-white px-6 py-3 rounded-full font-deco text-sm tracking-widest shadow-lg hover:shadow-xl transition"
-            >
+            <button onClick={() => scrollTo('rsvp')} className="group inline-flex items-center gap-2 bg-red-800 hover:bg-red-900 text-white px-6 py-3 rounded-full font-deco text-sm tracking-widest shadow-lg hover:shadow-xl transition">
               <Heart size={16} className="group-hover:scale-110 transition" />
               SAVE THE DATE / तिथि सुरक्षित करें
             </button>
-            <button
-              onClick={() => scrollTo('events')}
-              className="inline-flex items-center gap-2 bg-white border-2 border-amber-600 text-amber-900 hover:bg-amber-50 px-6 py-3 rounded-full font-deco text-sm tracking-widest transition"
-            >
+            <button onClick={() => scrollTo('events')} className="inline-flex items-center gap-2 bg-white border-2 border-amber-600 text-amber-900 hover:bg-amber-50 px-6 py-3 rounded-full font-deco text-sm tracking-widest transition">
               <Calendar size={16} />
               VIEW EVENTS / कार्यक्रम देखें
             </button>
-            <button
-              onClick={shareOnWhatsApp}
-              className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-full font-deco text-sm tracking-widest transition"
-            >
+            <button onClick={shareOnWhatsApp} className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-full font-deco text-sm tracking-widest transition">
               SHARE / साझा करें
             </button>
           </div>
-
-          {/* Hashtag */}
-          <div className="fade-up mt-10 font-deco text-sm text-amber-800 tracking-widest" style={{ animationDelay: '1s' }}>
-            {WEDDING.hashtag}
-          </div>
+          <div className="fade-up mt-10 font-deco text-sm text-amber-800 tracking-widest" style={{ animationDelay: '1s' }}>{WEDDING.hashtag}</div>
         </div>
       </section>
 
-      {/* ================ STORY ================ */}
+      {/* STORY */}
       <section id="story" className="py-20 sm:py-28 px-4 sm:px-6 bg-gradient-to-b from-[#FDF6E9] to-amber-50/40">
         <div className="max-w-4xl mx-auto text-center">
           <div className="font-hindi text-amber-700 text-sm mb-3">॥ हमारी कहानी ॥</div>
@@ -511,45 +466,15 @@ export default function WeddingWebsite() {
             <Heart size={14} className="mx-3 text-red-700" fill="currentColor" />
             <div className="h-px w-20 bg-amber-600/40" />
           </div>
-
-          <p className="font-hindi text-base sm:text-lg text-stone-700 italic mb-4">
-            "{WEDDING.quote}"
-          </p>
-          <p className="font-serif-display text-lg sm:text-xl text-stone-700 italic mb-8">
-            "{WEDDING.quoteEn}"
-          </p>
-
-          <p className="font-hindi text-base sm:text-lg text-stone-700 leading-relaxed max-w-3xl mx-auto mb-6">
-            {WEDDING.storyHi}
-          </p>
-          <p className="font-serif-display text-lg sm:text-xl text-stone-700 leading-relaxed max-w-3xl mx-auto">
-            {WEDDING.storyEn}
-          </p>
-
-          {/* Timeline */}
+          <p className="font-hindi text-base sm:text-lg text-stone-700 italic mb-4">"{WEDDING.quote}"</p>
+          <p className="font-serif-display text-lg sm:text-xl text-stone-700 italic mb-8">"{WEDDING.quoteEn}"</p>
+          <p className="font-hindi text-base sm:text-lg text-stone-700 leading-relaxed max-w-3xl mx-auto mb-6">{WEDDING.storyHi}</p>
+          <p className="font-serif-display text-lg sm:text-xl text-stone-700 leading-relaxed max-w-3xl mx-auto">{WEDDING.storyEn}</p>
           <div className="mt-16 grid sm:grid-cols-3 gap-6 text-left">
             {[
-              {
-                icon: '✨',
-                titleEn: 'How we met',
-                titleHi: 'पहली मुलाक़ात',
-                bodyEn: 'Two families connected through shared friends in Muzaffarpur. The first meeting felt like home.',
-                bodyHi: 'मुजफ्फरपुर में दो परिवार साझे मित्रों के माध्यम से जुड़े। पहली मुलाक़ात ऐसी लगी जैसे अपना घर हो।',
-              },
-              {
-                icon: '👰🤵',
-                titleEn: 'A New Beginning',
-                titleHi: 'नई शुरुआत',
-                bodyEn: 'With the blessings of their families, Prakash and Priya are ready to begin this beautiful journey together and create a lifetime of memories.',
-                bodyHi: 'परिवारों के आशीर्वाद के साथ, प्रकाश और प्रिया अब अपनी नई जिंदगी की शुरुआत करने जा रहे हैं और साथ मिलकर खूबसूरत यादें बनाने के लिए तैयार हैं।',
-              },
-              {
-                icon: '🎉',
-                titleEn: 'Lifetime Commitment',
-                titleHi: 'जीवनभर का साथ',
-                bodyEn: 'Now we invite you to witness our forever begin — with sindoor, vows, and a lot of joy.',
-                bodyHi: 'अब हम आपको आमंत्रित करते हैं कि हमारे सदा-सर्वदा की शुरुआत के साक्षी बनें — सिंदूर, वचन, और असीम आनंद के साथ।',
-              },
+              { icon: '✨', titleEn: 'How we met', titleHi: 'पहली मुलाक़ात', bodyEn: 'Two families connected through shared friends in Muzaffarpur. The first meeting felt like home.', bodyHi: 'मुजफ्फरपुर में दो परिवार साझे मित्रों के माध्यम से जुड़े।' },
+              { icon: '👰🤵', titleEn: 'A New Beginning', titleHi: 'नई शुरुआत', bodyEn: 'With the blessings of their families, Prakash and Priya are ready to begin this beautiful journey together.', bodyHi: 'परिवारों के आशीर्वाद के साथ, प्रकाश और प्रिया अब अपनी नई जिंदगी की शुरुआत करने जा रहे हैं।' },
+              { icon: '🎉', titleEn: 'Lifetime Commitment', titleHi: 'जीवनभर का साथ', bodyEn: 'Now we invite you to witness our forever begin — with sindoor, vows, and a lot of joy.', bodyHi: 'अब हम आपको आमंत्रित करते हैं कि हमारे सदा-सर्वदा की शुरुआत के साक्षी बनें।' },
             ].map((s, i) => (
               <div key={i} className="bg-white/60 border border-amber-200 rounded-lg p-6 shadow-sm hover:shadow-md transition">
                 <div className="text-3xl mb-3">{s.icon}</div>
@@ -563,7 +488,7 @@ export default function WeddingWebsite() {
         </div>
       </section>
 
-      {/* ================ EVENTS ================ */}
+      {/* EVENTS */}
       <section id="events" className="py-20 sm:py-28 px-4 sm:px-6 diya-pattern">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-14">
@@ -572,71 +497,35 @@ export default function WeddingWebsite() {
             <p className="font-hindi text-stone-700 mt-3 text-base">छः दिनों का उत्सव — हम आशा करते हैं आप सभी कार्यक्रमों में पधारेंगे</p>
             <p className="font-serif-display text-stone-600 mt-1">Six days of celebration. We hope to see you at all of them.</p>
           </div>
-
           <div className="space-y-5">
-            {EVENTS.map((ev, idx) => (
-              <div
-                key={ev.key}
-                className={`relative rounded-2xl border-2 p-5 sm:p-7 shadow-sm hover:shadow-lg transition-all ${colorClasses[ev.color]} ${
-                  ev.highlight ? 'ring-2 ring-offset-2 ring-red-300' : ''
-                }`}
-              >
+            {EVENTS.map((ev) => (
+              <div key={ev.key} className={`relative rounded-2xl border-2 p-5 sm:p-7 shadow-sm hover:shadow-lg transition-all ${colorClasses[ev.color]} ${ev.highlight ? 'ring-2 ring-offset-2 ring-red-300' : ''}`}>
                 <div className="grid sm:grid-cols-[auto_1fr_auto] gap-4 sm:gap-6 items-start">
-                  {/* Date block */}
                   <div className="text-center sm:border-r sm:border-current/20 sm:pr-6 min-w-[100px]">
                     <div className="text-4xl mb-1">{ev.icon}</div>
                     <div className="font-deco text-xs tracking-widest opacity-70">{ev.dateLabel.split(',')[0]}</div>
                     <div className="font-serif-display text-3xl font-bold leading-none my-1">{ev.dateLabel.split(' ')[1]}</div>
                     <div className="font-deco text-xs tracking-widest opacity-70">{ev.dateLabel.split(' ')[2]?.toUpperCase()}</div>
                   </div>
-
-                  {/* Details */}
                   <div className="space-y-2">
                     <div className="font-hindi text-lg sm:text-xl font-semibold">{ev.name}</div>
                     <div className="font-script text-2xl sm:text-3xl">{ev.nameEn}</div>
-                    <div className="flex items-start gap-2 text-sm opacity-80">
-                      <Calendar size={14} className="mt-1 flex-shrink-0" />
-                      <span>{ev.time}</span>
-                    </div>
+                    <div className="flex items-start gap-2 text-sm opacity-80"><Calendar size={14} className="mt-1 flex-shrink-0" /><span>{ev.time}</span></div>
                     <div className="flex items-start gap-2 text-sm opacity-80">
                       <MapPin size={14} className="mt-1 flex-shrink-0" />
-                      <div>
-                        <div className="font-medium">{ev.venue}</div>
-                        <div className="text-xs">{ev.venueLine2}</div>
-                      </div>
+                      <div><div className="font-medium">{ev.venue}</div><div className="text-xs">{ev.venueLine2}</div></div>
                     </div>
-                    <div className="flex items-start gap-2 text-sm opacity-80">
-                      <Sparkles size={14} className="mt-1 flex-shrink-0" />
-                      <span><span className="font-deco text-xs tracking-widest">DRESS / पोशाक:</span> {ev.dress}</span>
-                    </div>
-                    <div className="flex items-start gap-2 text-sm opacity-80">
-                      <Phone size={14} className="mt-1 flex-shrink-0" />
-                      <span>{ev.contact}</span>
-                    </div>
+                    <div className="flex items-start gap-2 text-sm opacity-80"><Sparkles size={14} className="mt-1 flex-shrink-0" /><span><span className="font-deco text-xs tracking-widest">DRESS / पोशाक:</span> {ev.dress}</span></div>
+                    <div className="flex items-start gap-2 text-sm opacity-80"><Phone size={14} className="mt-1 flex-shrink-0" /><span>{ev.contact}</span></div>
                   </div>
-
-                  {/* Actions */}
                   <div className="flex sm:flex-col gap-2 mt-2 sm:mt-0">
-                    <button
-                      onClick={() => addToCalendar(ev)}
-                      className="text-xs font-deco tracking-widest px-3 py-2 rounded bg-white/70 hover:bg-white border border-current/30 transition"
-                    >
-                      + CALENDAR / कैलेंडर
-                    </button>
-                    <a
-                      href={ev.mapUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs font-deco tracking-widest px-3 py-2 rounded bg-white/70 hover:bg-white border border-current/30 transition text-center"
-                    >
-                      MAP / नक्शा →
-                    </a>
+                    <button onClick={() => addToCalendar(ev)} className="text-xs font-deco tracking-widest px-3 py-2 rounded bg-white/70 hover:bg-white border border-current/30 transition">+ CALENDAR / कैलेंडर</button>
+                    <a href={ev.mapUrl} target="_blank" rel="noopener noreferrer" className="text-xs font-deco tracking-widest px-3 py-2 rounded bg-white/70 hover:bg-white border border-current/30 transition text-center">MAP / नक्शा →</a>
                   </div>
                 </div>
               </div>
             ))}
           </div>
-
           <div className="mt-10 text-center font-serif-display italic text-stone-600">
             All ceremonies (except the wedding itself) are held at the Mehta residence in Ahiyapur, Muzaffarpur.
             <br />
@@ -645,199 +534,116 @@ export default function WeddingWebsite() {
         </div>
       </section>
 
-      {/* ================ RSVP ================ */}
+      {/* RSVP */}
       <section id="rsvp" className="py-20 sm:py-28 px-4 sm:px-6 bg-gradient-to-b from-amber-50/40 to-[#FDF6E9]">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-10">
             <div className="font-hindi text-amber-700 text-sm mb-3">॥ कृपया उत्तर दें ॥</div>
             <h2 className="font-script text-5xl sm:text-6xl text-red-900 mb-2">RSVP</h2>
             <p className="font-hindi text-stone-700 mt-3">कृपया <span className="font-semibold">31 मई 2026</span> तक उत्तर दें</p>
-            <p className="font-serif-display text-stone-600 mt-1">
-              Kindly respond by <span className="font-semibold">31 May 2026</span>
-            </p>
+            <p className="font-serif-display text-stone-600 mt-1">Kindly respond by <span className="font-semibold">31 May 2026</span></p>
           </div>
-
           {!rsvpSubmitted ? (
             <div className="bg-white border-2 border-amber-200 rounded-2xl p-6 sm:p-8 shadow-md space-y-5">
-              {/* Name */}
               <div>
                 <label className="font-deco text-xs tracking-widest text-stone-700 block mb-2">YOUR NAME * / आपका नाम</label>
-                <input
-                  type="text"
-                  value={rsvp.name}
-                  onChange={(e) => setRsvp({ ...rsvp, name: e.target.value })}
-                  placeholder="Full name as on invite / पूरा नाम"
-                  className="w-full px-4 py-3 border border-amber-300 rounded-lg bg-amber-50/30 focus:outline-none focus:ring-2 focus:ring-amber-600 font-serif-display text-lg"
-                />
+                <input type="text" value={rsvp.name} onChange={(e) => setRsvp({ ...rsvp, name: e.target.value })} placeholder="Full name / पूरा नाम"
+                  className="w-full px-4 py-3 border border-amber-300 rounded-lg bg-amber-50/30 focus:outline-none focus:ring-2 focus:ring-amber-600 font-serif-display text-lg" />
               </div>
-
-              {/* Attending */}
               <div>
                 <label className="font-deco text-xs tracking-widest text-stone-700 block mb-2">WILL YOU BE JOINING? * / क्या आप पधार रहे हैं?</label>
                 <div className="grid grid-cols-2 gap-3">
-                  {[
-                    { val: 'yes', label: 'Joyfully Accept', sub: 'सहर्ष स्वीकार' },
-                    { val: 'no', label: 'Regretfully Decline', sub: 'क्षमा करें' },
-                  ].map((opt) => (
-                    <button
-                      key={opt.val}
-                      onClick={() => setRsvp({ ...rsvp, attending: opt.val })}
-                      className={`p-4 rounded-lg border-2 transition text-left ${
-                        rsvp.attending === opt.val
-                          ? 'border-red-700 bg-red-50'
-                          : 'border-amber-200 hover:border-amber-400'
-                      }`}
-                    >
+                  {[{ val: 'yes', label: 'Joyfully Accept', sub: 'सहर्ष स्वीकार' }, { val: 'no', label: 'Regretfully Decline', sub: 'क्षमा करें' }].map((opt) => (
+                    <button key={opt.val} onClick={() => setRsvp({ ...rsvp, attending: opt.val })}
+                      className={`p-4 rounded-lg border-2 transition text-left ${rsvp.attending === opt.val ? 'border-red-700 bg-red-50' : 'border-amber-200 hover:border-amber-400'}`}>
                       <div className="font-deco text-sm tracking-wide">{opt.label}</div>
                       <div className="font-hindi text-xs text-amber-800 mt-1">{opt.sub}</div>
                     </button>
                   ))}
                 </div>
               </div>
-
               {rsvp.attending === 'yes' && (
                 <>
-                  {/* Guest count */}
                   <div>
                     <label className="font-deco text-xs tracking-widest text-stone-700 block mb-2">NUMBER OF GUESTS / अतिथियों की संख्या</label>
                     <div className="flex items-center gap-3">
-                      <button
-                        onClick={() => setRsvp({ ...rsvp, guests: Math.max(1, rsvp.guests - 1) })}
-                        className="w-10 h-10 rounded-full border-2 border-amber-400 hover:bg-amber-100 font-bold"
-                      >−</button>
+                      <button onClick={() => setRsvp({ ...rsvp, guests: Math.max(1, rsvp.guests - 1) })} className="w-10 h-10 rounded-full border-2 border-amber-400 hover:bg-amber-100 font-bold">−</button>
                       <div className="font-serif-display text-3xl text-red-900 w-12 text-center">{rsvp.guests}</div>
-                      <button
-                        onClick={() => setRsvp({ ...rsvp, guests: Math.min(20, rsvp.guests + 1) })}
-                        className="w-10 h-10 rounded-full border-2 border-amber-400 hover:bg-amber-100 font-bold"
-                      >+</button>
+                      <button onClick={() => setRsvp({ ...rsvp, guests: Math.min(20, rsvp.guests + 1) })} className="w-10 h-10 rounded-full border-2 border-amber-400 hover:bg-amber-100 font-bold">+</button>
                       <span className="text-sm text-stone-600 ml-2">including yourself / आप सहित</span>
                     </div>
                   </div>
-
-                  {/* Events attending */}
                   <div>
                     <label className="font-deco text-xs tracking-widest text-stone-700 block mb-2">WHICH EVENTS? / किन कार्यक्रमों में आएँगे?</label>
                     <div className="grid sm:grid-cols-2 gap-2">
                       {EVENTS.map((ev) => (
-                        <label
-                          key={ev.key}
-                          className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition ${
-                            rsvp.events.includes(ev.key)
-                              ? 'border-red-700 bg-red-50'
-                              : 'border-amber-200 hover:border-amber-400'
-                          }`}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={rsvp.events.includes(ev.key)}
+                        <label key={ev.key} className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition ${rsvp.events.includes(ev.key) ? 'border-red-700 bg-red-50' : 'border-amber-200 hover:border-amber-400'}`}>
+                          <input type="checkbox" checked={rsvp.events.includes(ev.key)}
                             onChange={(e) => {
-                              const events = e.target.checked
-                                ? [...rsvp.events, ev.key]
-                                : rsvp.events.filter((k) => k !== ev.key);
+                              const events = e.target.checked ? [...rsvp.events, ev.key] : rsvp.events.filter((k) => k !== ev.key);
                               setRsvp({ ...rsvp, events });
-                            }}
-                            className="accent-red-700"
-                          />
+                            }} className="accent-red-700" />
                           <span className="text-sm">{ev.icon} {ev.nameEn}</span>
                         </label>
                       ))}
                     </div>
                   </div>
-
-                  {/* Meal */}
                   <div>
                     <label className="font-deco text-xs tracking-widest text-stone-700 block mb-2">MEAL PREFERENCE / भोजन पसंद</label>
-                    <div className="grid grid-cols-3 gap-2">
-                      {[
-                        { val: 'veg', label: '🌱 Veg' },
-                        { val: 'jain', label: '🙏 Jain' },
-                      ].map((m) => (
-                        <button
-                          key={m.val}
-                          onClick={() => setRsvp({ ...rsvp, meal: m.val })}
-                          className={`p-3 rounded-lg border-2 transition ${
-                            rsvp.meal === m.val ? 'border-red-700 bg-red-50' : 'border-amber-200'
-                          }`}
-                        >
+                    <div className="grid grid-cols-2 gap-2">
+                      {[{ val: 'veg', label: '🌱 Veg' }, { val: 'jain', label: '🙏 Jain' }].map((m) => (
+                        <button key={m.val} onClick={() => setRsvp({ ...rsvp, meal: m.val })} className={`p-3 rounded-lg border-2 transition ${rsvp.meal === m.val ? 'border-red-700 bg-red-50' : 'border-amber-200'}`}>
                           <span className="text-sm">{m.label}</span>
                         </button>
                       ))}
                     </div>
                   </div>
-
-                  {/* Accommodation */}
                   <div>
                     <label className="font-deco text-xs tracking-widest text-stone-700 block mb-2">NEED ACCOMMODATION? / आवास की आवश्यकता?</label>
                     <div className="grid grid-cols-2 gap-2">
                       {[{ val: 'yes', label: 'Yes, please / हाँ' }, { val: 'no', label: 'No, thanks / नहीं' }].map((a) => (
-                        <button
-                          key={a.val}
-                          onClick={() => setRsvp({ ...rsvp, accommodation: a.val })}
-                          className={`p-3 rounded-lg border-2 transition ${
-                            rsvp.accommodation === a.val ? 'border-red-700 bg-red-50' : 'border-amber-200'
-                          }`}
-                        >
+                        <button key={a.val} onClick={() => setRsvp({ ...rsvp, accommodation: a.val })} className={`p-3 rounded-lg border-2 transition ${rsvp.accommodation === a.val ? 'border-red-700 bg-red-50' : 'border-amber-200'}`}>
                           <span className="text-sm">{a.label}</span>
                         </button>
                       ))}
                     </div>
                   </div>
-
-                  {/* Travel */}
                   <div>
                     <label className="font-deco text-xs tracking-widest text-stone-700 block mb-2">TRAVEL DETAILS (optional) / यात्रा विवरण</label>
-                    <input
-                      type="text"
-                      value={rsvp.travel}
-                      onChange={(e) => setRsvp({ ...rsvp, travel: e.target.value })}
-                      placeholder="e.g. Arriving 18 Jun by train, leaving 22 Jun / 18 जून ट्रेन से आगमन"
-                      className="w-full px-4 py-3 border border-amber-300 rounded-lg bg-amber-50/30 focus:outline-none focus:ring-2 focus:ring-amber-600"
-                    />
+                    <input type="text" value={rsvp.travel} onChange={(e) => setRsvp({ ...rsvp, travel: e.target.value })} placeholder="e.g. Arriving 18 Jun by train"
+                      className="w-full px-4 py-3 border border-amber-300 rounded-lg bg-amber-50/30 focus:outline-none focus:ring-2 focus:ring-amber-600" />
+                  </div>
+                  <div>
+                    <label className="font-deco text-xs tracking-widest text-stone-700 block mb-2">PHONE NUMBER (optional) / फ़ोन नंबर</label>
+                    <input type="tel" value={rsvp.phone} onChange={(e) => setRsvp({ ...rsvp, phone: e.target.value })} placeholder="+91 ____ ___ ___"
+                      className="w-full px-4 py-3 border border-amber-300 rounded-lg bg-amber-50/30 focus:outline-none focus:ring-2 focus:ring-amber-600" />
                   </div>
                 </>
               )}
-
-              {/* Message */}
               <div>
                 <label className="font-deco text-xs tracking-widest text-stone-700 block mb-2">A MESSAGE FOR THE COUPLE (optional) / नवदम्पति के लिए संदेश</label>
-                <textarea
-                  value={rsvp.message}
-                  onChange={(e) => setRsvp({ ...rsvp, message: e.target.value })}
-                  rows={3}
-                  placeholder="Send your blessings, wishes, or just say hi 💌 / आशीर्वाद एवं शुभकामनाएँ"
-                  className="w-full px-4 py-3 border border-amber-300 rounded-lg bg-amber-50/30 focus:outline-none focus:ring-2 focus:ring-amber-600 font-serif-display"
-                />
+                <textarea value={rsvp.message} onChange={(e) => setRsvp({ ...rsvp, message: e.target.value })} rows={3} placeholder="Send your blessings 💌 / आशीर्वाद एवं शुभकामनाएँ"
+                  className="w-full px-4 py-3 border border-amber-300 rounded-lg bg-amber-50/30 focus:outline-none focus:ring-2 focus:ring-amber-600 font-serif-display" />
               </div>
-
-              <button
-                onClick={submitRsvp}
-                disabled={!rsvp.name || !rsvp.attending}
-                className="w-full bg-red-800 hover:bg-red-900 disabled:bg-stone-300 disabled:cursor-not-allowed text-white py-4 rounded-lg font-deco tracking-widest shadow-lg transition"
-              >
-                SUBMIT RSVP / उत्तर भेजें →
+              {rsvpError && <div className="bg-red-50 border border-red-300 text-red-800 px-4 py-3 rounded-lg text-sm">⚠️ {rsvpError}</div>}
+              <button onClick={submitRsvp} disabled={!rsvp.name || !rsvp.attending || rsvpSubmitting}
+                className="w-full bg-red-800 hover:bg-red-900 disabled:bg-stone-300 disabled:cursor-not-allowed text-white py-4 rounded-lg font-deco tracking-widest shadow-lg transition">
+                {rsvpSubmitting ? 'SENDING... / भेज रहे हैं...' : 'SUBMIT RSVP / उत्तर भेजें →'}
               </button>
             </div>
           ) : (
             <div className="bg-white border-2 border-emerald-300 rounded-2xl p-8 text-center shadow-md">
-              <div className="w-16 h-16 mx-auto rounded-full bg-emerald-100 flex items-center justify-center mb-4">
-                <Check size={32} className="text-emerald-700" />
-              </div>
+              <div className="w-16 h-16 mx-auto rounded-full bg-emerald-100 flex items-center justify-center mb-4"><Check size={32} className="text-emerald-700" /></div>
               <div className="font-hindi text-amber-700 mb-2">॥ धन्यवाद ॥</div>
               <h3 className="font-script text-4xl text-red-900 mb-3">Thank You!</h3>
               <p className="font-serif-display text-stone-700 leading-relaxed">
-                {rsvp.attending === 'yes'
-                  ? `We can't wait to celebrate with you, ${rsvp.name}! We'll be in touch with more details soon.`
-                  : `Thank you for letting us know, ${rsvp.name}. We'll miss you and will send blessings your way. 💛`}
+                {rsvp.attending === 'yes' ? `We can't wait to celebrate with you, ${rsvp.name}!` : `Thank you for letting us know, ${rsvp.name}. We'll miss you. 💛`}
               </p>
               <p className="font-hindi text-stone-600 leading-relaxed mt-3">
-                {rsvp.attending === 'yes'
-                  ? `${rsvp.name} जी, आपके साथ इस ख़ुशी के पल मनाने का इंतज़ार है! जल्द ही और विवरण भेजेंगे।`
-                  : `${rsvp.name} जी, सूचित करने के लिए धन्यवाद। आपकी कमी खलेगी, हमारी शुभकामनाएँ आपके साथ हैं। 💛`}
+                {rsvp.attending === 'yes' ? `${rsvp.name} जी, आपके साथ इस ख़ुशी के पल मनाने का इंतज़ार है!` : `${rsvp.name} जी, सूचित करने के लिए धन्यवाद। 💛`}
               </p>
-              <button
-                onClick={() => { setRsvpSubmitted(false); setRsvp({ name: '', attending: '', guests: 1, meal: 'veg', accommodation: 'no', events: [], travel: '', message: '' }); }}
-                className="mt-6 text-sm font-deco tracking-widest text-amber-800 hover:text-red-900 underline"
-              >
+              <button onClick={() => { setRsvpSubmitted(false); setRsvpError(null); setRsvp({ name: '', attending: '', guests: 1, meal: 'veg', accommodation: 'no', events: [], travel: '', phone: '', message: '' }); }}
+                className="mt-6 text-sm font-deco tracking-widest text-amber-800 hover:text-red-900 underline">
                 Submit another RSVP / दूसरा उत्तर भेजें
               </button>
             </div>
@@ -845,7 +651,7 @@ export default function WeddingWebsite() {
         </div>
       </section>
 
-      {/* ================ TRAVEL & STAY ================ */}
+      {/* TRAVEL & STAY */}
       <section id="travel" className="py-20 sm:py-28 px-4 sm:px-6 mandala-bg">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-14">
@@ -854,66 +660,49 @@ export default function WeddingWebsite() {
             <p className="font-hindi text-stone-700 mt-3">मुजफ्फरपुर एवं पटना तक कैसे पहुँचें</p>
             <p className="font-serif-display text-stone-600 mt-1">Getting to Muzaffarpur &amp; Patna</p>
           </div>
-
           <div className="grid md:grid-cols-2 gap-5">
-            {/* By Air */}
             <div className="bg-white border border-amber-200 rounded-2xl p-6 shadow-sm">
               <Plane size={28} className="text-amber-700 mb-3" />
               <h3 className="font-deco text-lg tracking-widest text-red-900 mb-1">BY AIR</h3>
               <div className="font-hindi text-sm text-amber-800 mb-3">हवाई मार्ग से</div>
               <div className="space-y-2 text-sm text-stone-700">
-                <div><strong>Patna Airport (PAT)</strong> / पटना हवाई अड्डा — 75 km from Muzaffarpur (~2 hrs)</div>
-                <div><strong>Darbhanga Airport (DBR)</strong> / दरभंगा हवाई अड्डा — 65 km (~1.5 hrs)</div>
-                <div className="text-xs text-amber-800 mt-3">
-                  Pickup can be arranged. Mark "Need Pickup" in RSVP travel field.<br />
-                  <span className="font-hindi">पिकअप की व्यवस्था की जा सकती है। RSVP में बताएँ।</span>
-                </div>
+                <div><strong>Patna Airport (PAT)</strong> — 75 km (~2 hrs)</div>
+                <div><strong>Darbhanga Airport (DBR)</strong> — 65 km (~1.5 hrs)</div>
+                <div className="text-xs text-amber-800 mt-3">Pickup can be arranged.<br /><span className="font-hindi">पिकअप की व्यवस्था की जा सकती है।</span></div>
               </div>
             </div>
-
-            {/* By Train */}
             <div className="bg-white border border-amber-200 rounded-2xl p-6 shadow-sm">
               <Car size={28} className="text-amber-700 mb-3" />
               <h3 className="font-deco text-lg tracking-widest text-red-900 mb-1">BY TRAIN</h3>
               <div className="font-hindi text-sm text-amber-800 mb-3">रेल मार्ग से</div>
               <div className="space-y-2 text-sm text-stone-700">
-                <div><strong>Muzaffarpur Jn (MFP)</strong> / मुजफ्फरपुर जं — main station, well-connected</div>
-                <div><strong>Patna Jn (PNBE)</strong> / पटना जं — for wedding day, then drive</div>
-                <div><strong>Hajipur Jn (HJP)</strong> / हाजीपुर जं — alternate, 40 km</div>
+                <div><strong>Muzaffarpur Jn (MFP)</strong> — main station</div>
+                <div><strong>Patna Jn (PNBE)</strong> — for wedding day</div>
+                <div><strong>Hajipur Jn (HJP)</strong> — alternate, 40 km</div>
               </div>
             </div>
-
-            {/* Weather */}
             <div className="bg-gradient-to-br from-amber-100 to-orange-50 border border-amber-200 rounded-2xl p-6 shadow-sm">
               <h3 className="font-deco text-lg tracking-widest text-red-900 mb-1">☀️ WEATHER IN JUNE</h3>
               <div className="font-hindi text-sm text-amber-800 mb-3">जून का मौसम</div>
               <div className="text-sm text-stone-700 space-y-1">
                 <div>Expect <strong>32–38°C</strong> · humid, occasional rain</div>
-                <div className="font-hindi text-xs">तापमान 32–38°C · उमस, हल्की बारिश की संभावना</div>
+                <div className="font-hindi text-xs">तापमान 32–38°C · उमस, हल्की बारिश</div>
                 <div className="mt-2">Pack: light cotton, breathable kurta, umbrella</div>
-                <div className="font-hindi text-xs">सुझाव: हल्के सूती कपड़े, कुर्ता, छाता ज़रूर रखें</div>
-                <div className="text-xs mt-2 italic">Indoor venues are AC. / स्थल वातानुकूलित हैं।</div>
               </div>
             </div>
-
-            {/* Local Transport */}
             <div className="bg-gradient-to-br from-rose-50 to-amber-50 border border-amber-200 rounded-2xl p-6 shadow-sm">
               <h3 className="font-deco text-lg tracking-widest text-red-900 mb-1">🛺 LOCAL TRANSPORT</h3>
               <div className="font-hindi text-sm text-amber-800 mb-3">स्थानीय यातायात</div>
               <div className="text-sm text-stone-700 space-y-1">
-                <div><strong>Rapido:</strong> Limited / <span className="font-hindi">सीमित उपलब्धता</span></div>
-                <div><strong>Auto/Rickshaw:</strong> Plenty available / <span className="font-hindi">ऑटो/रिक्शा खूब मिलेंगे</span></div>
-                <div className="text-xs mt-3 italic">
-                  Family cars available for pickup from the railway station, airport, and for shuttling between events.<br />
-                  <span className="font-hindi">रेलवे स्टेशन, एयरपोर्ट से पिकअप और कार्यक्रमों के बीच आने-जाने के लिए परिवार की गाड़ियाँ उपलब्ध रहेंगी।</span>
-                </div>
+                <div><strong>Auto/Rickshaw:</strong> Plenty available</div>
+                <div className="text-xs mt-3 italic">Family cars available for pickup.<br /><span className="font-hindi">परिवार की गाड़ियाँ उपलब्ध रहेंगी।</span></div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ================ GALLERY ================ */}
+      {/* GALLERY — with Cloudinary upload */}
       <section id="gallery" className="py-20 sm:py-28 px-4 sm:px-6 bg-gradient-to-b from-[#FDF6E9] to-rose-50/30">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
@@ -922,55 +711,66 @@ export default function WeddingWebsite() {
             <p className="font-hindi text-stone-700 mt-3">शादी-पूर्व क्षण एवं यादें</p>
             <p className="font-serif-display text-stone-600 mt-1">Pre-wedding moments &amp; memories</p>
           </div>
-
-          {/* Placeholder gallery */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
             {[...Array(8)].map((_, i) => (
-              <div
-                key={i}
-                className="aspect-square rounded-lg bg-gradient-to-br from-amber-100 via-rose-100 to-orange-100 border border-amber-200 flex items-center justify-center text-4xl hover:scale-105 transition cursor-pointer shadow-sm"
-                style={{ transform: i % 2 === 0 ? 'rotate(-1deg)' : 'rotate(1deg)' }}
-              >
+              <div key={i} className="aspect-square rounded-lg bg-gradient-to-br from-amber-100 via-rose-100 to-orange-100 border border-amber-200 flex items-center justify-center text-4xl hover:scale-105 transition cursor-pointer shadow-sm"
+                style={{ transform: i % 2 === 0 ? 'rotate(-1deg)' : 'rotate(1deg)' }}>
                 {['💑', '🌸', '💍', '🎉', '🪔', '💐', '🌼', '✨'][i]}
               </div>
             ))}
           </div>
 
-          <div className="mt-8 text-center">
-            <button className="inline-flex items-center gap-2 bg-white border-2 border-amber-600 text-amber-900 hover:bg-amber-50 px-6 py-3 rounded-full font-deco text-sm tracking-widest transition">
-              <Camera size={16} />
-              UPLOAD YOUR PHOTOS
-            </button>
-            <p className="text-xs text-stone-600 mt-3 font-serif-display italic">
-              Share your shots after the wedding using {WEDDING.hashtag}
+          {/* CLOUDINARY UPLOAD BUTTON */}
+          <div className="mt-8 text-center space-y-4">
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <button onClick={openCloudinaryWidget}
+                className="inline-flex items-center gap-2 bg-red-800 hover:bg-red-900 text-white px-6 py-3 rounded-full font-deco text-sm tracking-widest shadow-md transition">
+                <Camera size={16} />
+                UPLOAD YOUR PHOTOS / फ़ोटो अपलोड करें
+              </button>
+            </div>
+
+            {/* Upload status feedback */}
+            {uploadStatus.uploading && (
+              <div className="bg-amber-50 border border-amber-300 text-amber-800 px-4 py-3 rounded-lg text-sm max-w-md mx-auto">
+                ⏳ Uploading photos... / फ़ोटो अपलोड हो रही हैं...
+              </div>
+            )}
+            {uploadStatus.success > 0 && !uploadStatus.uploading && (
+              <div className="bg-emerald-50 border border-emerald-300 text-emerald-800 px-4 py-3 rounded-lg text-sm max-w-md mx-auto">
+                ✓ {uploadStatus.success} photo(s) uploaded! Thank you 💛<br />
+                <span className="font-hindi">{uploadStatus.success} फ़ोटो अपलोड हुई! धन्यवाद 💛</span>
+              </div>
+            )}
+
+            <p className="text-xs text-stone-600 font-serif-display italic max-w-md mx-auto">
+              Tap the button → choose photos from your phone → they'll upload automatically!<br />
+              <span className="font-hindi not-italic">बटन दबाएँ → अपनी फ़ोटो चुनें → स्वतः अपलोड हो जाएँगी!</span>
+            </p>
+            <p className="text-xs text-stone-500 font-serif-display">
+              Also share on social media using <span className="font-semibold text-amber-800">{WEDDING.hashtag}</span>
             </p>
           </div>
         </div>
       </section>
 
-      {/* ================ GIFTS / BLESSINGS ================ */}
+      {/* BLESSINGS */}
       <section id="gifts" className="py-20 sm:py-28 px-4 sm:px-6">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-12">
             <div className="font-hindi text-amber-700 text-sm mb-3">॥ आशीर्वाद ॥</div>
             <h2 className="font-script text-5xl sm:text-6xl text-red-900 mb-2">Blessings</h2>
             <p className="font-hindi text-stone-700 mt-3">आपकी उपस्थिति ही हमारे लिए सबसे बड़ा उपहार है</p>
-            <p className="font-serif-display text-stone-600 mt-1">
-              Your presence is the greatest gift. But if you wish to bless us further...
-            </p>
+            <p className="font-serif-display text-stone-600 mt-1">Your presence is the greatest gift.</p>
           </div>
-
           <div className="max-w-xl mx-auto">
             <div className="bg-gradient-to-br from-rose-50 to-amber-50 border-2 border-rose-200 rounded-2xl p-8 text-center shadow-sm">
               <Heart size={36} className="text-rose-700 mx-auto mb-4" fill="currentColor" />
               <h3 className="font-deco text-lg tracking-widest text-red-900 mb-1">DIGITAL BLESSINGS</h3>
               <div className="font-hindi text-sm text-amber-800 mb-4">डिजिटल आशीर्वाद</div>
-              <p className="text-sm text-stone-700 mb-2">Leave a wish in our RSVP form — we'll read each one ❤️</p>
-              <p className="font-hindi text-sm text-stone-600 mb-4">हमारे RSVP form में अपना आशीर्वाद छोड़ें — हम हर एक को पढ़ेंगे ❤️</p>
-              <button
-                onClick={() => scrollTo('rsvp')}
-                className="inline-flex items-center gap-2 bg-red-800 hover:bg-red-900 text-white px-6 py-3 rounded-full font-deco text-sm tracking-widest shadow-md transition mt-2"
-              >
+              <p className="text-sm text-stone-700 mb-2">Leave a wish in our RSVP form ❤️</p>
+              <p className="font-hindi text-sm text-stone-600 mb-4">हमारे RSVP form में अपना आशीर्वाद छोड़ें ❤️</p>
+              <button onClick={() => scrollTo('rsvp')} className="inline-flex items-center gap-2 bg-red-800 hover:bg-red-900 text-white px-6 py-3 rounded-full font-deco text-sm tracking-widest shadow-md transition mt-2">
                 LEAVE A BLESSING →
               </button>
             </div>
@@ -978,30 +778,18 @@ export default function WeddingWebsite() {
         </div>
       </section>
 
-      {/* ================ LIVE UPDATES ================ */}
+      {/* LIVE UPDATES */}
       <section id="updates" className="py-20 sm:py-28 px-4 sm:px-6 bg-gradient-to-b from-rose-50/30 to-[#FDF6E9]">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-10">
             <div className="font-hindi text-amber-700 text-sm mb-3">॥ ताज़ा सूचना ॥</div>
             <h2 className="font-script text-5xl sm:text-6xl text-red-900 mb-2">Live Updates</h2>
             <p className="font-hindi text-stone-700 mt-3">शादी सप्ताह की ताज़ा घोषणाएँ</p>
-            <p className="font-serif-display text-stone-600 mt-1">
-              Real-time announcements during the wedding week
-            </p>
+            <p className="font-serif-display text-stone-600 mt-1">Real-time announcements during the wedding week</p>
           </div>
-
           <div className="space-y-3">
             {liveUpdates.map((u) => (
-              <div
-                key={u.id}
-                className={`border-l-4 rounded-r-lg p-4 shadow-sm ${
-                  u.type === 'rsvp'
-                    ? 'border-emerald-500 bg-emerald-50'
-                    : u.type === 'alert'
-                    ? 'border-red-500 bg-red-50'
-                    : 'border-amber-500 bg-amber-50'
-                }`}
-              >
+              <div key={u.id} className={`border-l-4 rounded-r-lg p-4 shadow-sm ${u.type === 'rsvp' ? 'border-emerald-500 bg-emerald-50' : u.type === 'alert' ? 'border-red-500 bg-red-50' : 'border-amber-500 bg-amber-50'}`}>
                 <div className="flex items-start gap-3">
                   <Bell size={16} className="mt-1 flex-shrink-0 text-amber-700" />
                   <div className="flex-1">
@@ -1015,14 +803,10 @@ export default function WeddingWebsite() {
               </div>
             ))}
           </div>
-
           <div className="mt-8 text-center text-xs text-stone-600 font-serif-display italic">
-            Updates posted by family during the wedding week. Keep this page bookmarked!
-            <br />
-            <span className="font-hindi not-italic">शादी सप्ताह के दौरान परिवार द्वारा अद्यतन। इस पेज को सहेज कर रखें!</span>
+            Updates posted by family during the wedding week.<br />
+            <span className="font-hindi not-italic">शादी सप्ताह के दौरान परिवार द्वारा अद्यतन।</span>
           </div>
-
-          {/* Emergency contacts */}
           <div className="mt-10 bg-white border-2 border-red-200 rounded-2xl p-6">
             <h3 className="font-deco text-sm tracking-widest text-red-900 mb-1 text-center">🚨 EMERGENCY CONTACTS</h3>
             <div className="font-hindi text-xs text-amber-800 text-center mb-4">आपातकालीन सम्पर्क</div>
@@ -1033,10 +817,7 @@ export default function WeddingWebsite() {
                     <div className="font-semibold text-stone-800">{c.name}</div>
                     <div className="text-xs text-amber-700 font-deco tracking-wide">{c.role.toUpperCase()}</div>
                   </div>
-                  <a
-                    href={`tel:${c.phone.replace(/\s/g, '')}`}
-                    className="font-mono text-sm text-red-800 hover:underline flex items-center gap-1"
-                  >
+                  <a href={`tel:${c.phone.replace(/\s/g, '')}`} className="font-mono text-sm text-red-800 hover:underline flex items-center gap-1">
                     <Phone size={14} /> {c.phone}
                   </a>
                 </div>
@@ -1046,27 +827,15 @@ export default function WeddingWebsite() {
         </div>
       </section>
 
-      {/* ================ FOOTER ================ */}
+      {/* FOOTER */}
       <footer className="bg-gradient-to-b from-[#FDF6E9] to-red-900 text-amber-100 py-12 px-4 mt-10">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="font-script text-4xl gold-shimmer mb-2">
-            {WEDDING.groom.nameEn} &amp; {WEDDING.bride.nameEn}
-          </div>
-          <div className="font-deco text-sm tracking-widest text-amber-300 mb-6">
-            19 · 06 · 2026 · PATNA
-          </div>
-          <div className="font-hindi text-amber-200 text-sm mb-6">
-            ॥ आपकी स्नेहिल उपस्थिति ही हमारे लिए सबसे बड़ा उपहार है ॥
-          </div>
-          <div className="flex justify-center gap-4 mb-6">
-            <Heart size={16} className="text-amber-300" fill="currentColor" />
-          </div>
-          <p className="text-xs text-amber-300/80 font-serif-display">
-            Made with love by the Mehta family · {WEDDING.hashtag}
-          </p>
-          <p className="font-hindi text-xs text-amber-300/80 mt-1">
-            मेहता परिवार द्वारा प्रेम से निर्मित
-          </p>
+          <div className="font-script text-4xl gold-shimmer mb-2">{WEDDING.groom.nameEn} &amp; {WEDDING.bride.nameEn}</div>
+          <div className="font-deco text-sm tracking-widest text-amber-300 mb-6">19 · 06 · 2026 · PATNA</div>
+          <div className="font-hindi text-amber-200 text-sm mb-6">॥ आपकी स्नेहिल उपस्थिति ही हमारे लिए सबसे बड़ा उपहार है ॥</div>
+          <div className="flex justify-center gap-4 mb-6"><Heart size={16} className="text-amber-300" fill="currentColor" /></div>
+          <p className="text-xs text-amber-300/80 font-serif-display">Made with love by the Mehta family · {WEDDING.hashtag}</p>
+          <p className="font-hindi text-xs text-amber-300/80 mt-1">मेहता परिवार द्वारा प्रेम से निर्मित</p>
         </div>
         <div className="marigold-border h-2 mt-12 -mx-4" />
       </footer>
