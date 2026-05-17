@@ -25,7 +25,7 @@ export default function WeddingWebsite() {
   // ===========================================================================
   // 📋 GOOGLE SHEETS RSVP — Paste your Apps Script Web App URL here
   // ===========================================================================
-  const GOOGLE_SHEET_URL = 'PASTE_YOUR_APPS_SCRIPT_URL_HERE';
+  const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxL-OLqawa0-7eVI9O2mZJr-Dm_nMooCV5wvtvFqffTPXtuJ6ojU0BWe84apo0KpS5Z/exec';
   const WEDDING_SIDE = 'Groom';
 
   // ===========================================================================
